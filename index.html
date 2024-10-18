@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globalisation Gamified</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .question-container {
+            margin: 20px 0;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f9f9f9;
+            padding: 10px 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1.5em;
+        }
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button.correct {
+            background-color: lightgreen;
+        }
+        button.wrong {
+            background-color: lightcoral;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Globalisation Gamified</h1>
+    <h2>Score: <span id="score">0</span></h2>
+
+    <div id="quiz" class="question-container"></div>
+
+    <script>
+        let score = 0;
+        let usedQuestions = [];
+
+        const questions = [
+    {
+        question: "Which of the following factors contributed to the rapid population growth in 19th-century Europe?",
+        answers: ["Introduction of the potato as a staple food", "Falling death rates due to improved hygiene", "Development of the industrial workforce", "Decrease in urbanization"],
+        correctAnswer: 0,
+        explanation: "The introduction of the potato increased food production, helping to sustain a larger population."
+    },
+    {
+        question: "In what way did the 1870s depression impact global economic policies?",
+        answers: ["Triggered a rise in free trade agreements", "Increased competition in agricultural exports", "Led to a widespread turn towards protectionism", "Forced mass migration away from Europe"],
+        correctAnswer: 2,
+        explanation: "The depression caused many nations to turn to protectionist policies to safeguard their domestic economies."
+    },
+    {
+        question: "Which of the following best explains the significance of the 1873 depression?",
+        answers: ["It marked the beginning of industrial capitalism", "It led to a significant rise in farm subsidies", "It led to protectionist policies as farms were hit hard", "It forced more countries to engage in free trade"],
+        correctAnswer: 2,
+        explanation: "The 1873 depression led to protectionism because farms were hit hard, creating economic inequality."
+    },
+    {
+        question: "Which of the following accurately describes the global impact of the Treaty of Versailles?",
+        answers: ["It boosted global trade by removing tariffs", "It imposed reparations that led to financial strain on Germany", "It accelerated Germany’s industrialization", "It forced France and the UK to adopt protectionism"],
+        correctAnswer: 1,
+        explanation: "The Treaty of Versailles placed heavy reparations on Germany, causing financial strain and instability."
+    },
+    {
+        question: "What role did Confucianism play in stabilizing the Han Dynasty in China?",
+        answers: ["It led to the establishment of a centralized monetary system", "It promoted loyalty and strengthened the bureaucratic system", "It caused civil unrest through rigid class structures", "It reduced the power of elite families"],
+        correctAnswer: 1,
+        explanation: "Confucianism promoted loyalty and respect for authority, which helped stabilize the bureaucracy and the state."
+    },
+    {
+        question: "Which of the following economic concepts is linked to the Neo-liberal policies after 1973?",
+        answers: ["Strengthening the welfare state", "Keynesian demand management", "Deregulation of industries", "Large government intervention in markets"],
+        correctAnswer: 2,
+        explanation: "Neo-liberal policies emphasized deregulation and smaller government to allow market forces to operate freely."
+    },
+     {
+        question: "Which of the following best describes the economic philosophy of Keynesianism, which was dominant from 1945 to 1973?",
+        answers: ["Minimal government intervention", "Supply-side economics", "Strong government intervention to manage demand", "Complete free-market capitalism"],
+        correctAnswer: 2,
+        explanation: "Keynesianism advocates for strong government intervention to manage demand and ensure full employment, especially during economic downturns."
+    },
+    {
+        question: "Which of the following describes the primary aim of the North American Free Trade Agreement (NAFTA)?",
+        answers: ["To create a customs union", "To reduce tariffs and promote free trade between the U.S., Canada, and Mexico", "To introduce a common currency", "To impose environmental regulations across North America"],
+        correctAnswer: 1,
+        explanation: "NAFTA aimed to reduce tariffs and promote free trade among the U.S., Canada, and Mexico, creating a large free-trade zone."
+    },
+    {
+        question: "Which of the following countries did NOT experience rapid industrial growth in the 1960s as part of the 'Asian Tigers'?",
+        answers: ["South Korea", "Taiwan", "Singapore", "India"],
+        correctAnswer: 3,
+        explanation: "India did not experience the same rapid industrialization as the original Asian Tigers (South Korea, Taiwan, Singapore, and Hong Kong)."
+    },
+    {
+        question: "Which global economic shift in the 1970s led to the dominance of neoliberal policies?",
+        answers: ["The Great Depression", "The oil crisis caused by the OPEC embargo", "The end of the Cold War", "The formation of the World Trade Organization"],
+        correctAnswer: 1,
+        explanation: "The oil crisis caused by the OPEC embargo in 1973 triggered global economic shifts, leading to the rise of neoliberal policies."
+    },
+    {
+        question: "What was the primary goal of the European Union's monetary union?",
+        answers: ["To regulate international trade", "To create a common European defense policy", "To introduce a single currency, the Euro", "To form a free trade zone with North America"],
+        correctAnswer: 2,
+        explanation: "The primary goal of the EU's monetary union was to introduce a single currency, the Euro, for greater economic integration."
+    },
+    {
+        question: "Which of the following countries did NOT join the Organization of Petroleum Exporting Countries (OPEC)?",
+        answers: ["Nigeria", "Venezuela", "Russia", "Iraq"],
+        correctAnswer: 2,
+        explanation: "Russia is not an official member of OPEC, although it collaborates with the organization through OPEC+."
+    },
+    {
+        question: "Which of the following agreements is NOT related to climate change?",
+        answers: ["Kyoto Protocol", "Paris Agreement", "Copenhagen Accord", "NAFTA"],
+        correctAnswer: 3,
+        explanation: "NAFTA is a trade agreement between the U.S., Canada, and Mexico and is unrelated to climate change."
+    },
+    {
+        question: "Why did China open up its economy to foreign trade and investment after 1978?",
+        answers: ["To join OPEC", "To shift from communism to capitalism", "To modernize its economy and boost industrial growth", "To establish a global military alliance"],
+        correctAnswer: 2,
+        explanation: "China opened its economy after 1978 to modernize its industries and boost economic growth through foreign trade and investment."
+    },
+    {
+        question: "Which term refers to a self-sufficient economic system that limits trade with other countries?",
+        answers: ["Autarky", "Mercantilism", "Protectionism", "Globalization"],
+        correctAnswer: 0,
+        explanation: "Autarky refers to an economic system in which a country tries to be self-sufficient, minimizing its reliance on external trade."
+    },
+    {
+        question: "Which global trend in the 1970s increased global interconnectedness but also contributed to inequality?",
+        answers: ["Deindustrialization", "Globalization", "Protectionism", "Economic nationalism"],
+        correctAnswer: 1,
+        explanation: "Globalization increased global interconnectedness, but it also contributed to inequality by concentrating wealth in certain regions."
+    },
+    {
+        question: "Which of the following agreements aimed at reducing trade barriers and promoting free trade between the U.S., EU, and Canada?",
+        answers: ["NAFTA", "USMCA", "TTIP", "BRICS"],
+        correctAnswer: 2,
+        explanation: "TTIP, the Transatlantic Trade and Investment Partnership, aimed at reducing trade barriers and promoting free trade between the U.S., EU, and Canada."
+    },
+    {
+        question: "Which of the following best describes the shift to neoliberalism in the West after 1973?",
+        answers: ["An expansion of government welfare programs", "Increased state control over industries", "A reduction in government intervention and focus on market-driven policies", "A shift toward agricultural subsidies"],
+        correctAnswer: 2,
+        explanation: "Neoliberalism advocates for reduced government intervention in the economy and greater reliance on market-driven policies."
+    },
+    {
+        question: "Which of the following countries is a founding member of the European Union?",
+        answers: ["Spain", "Greece", "Italy", "Poland"],
+        correctAnswer: 2,
+        explanation: "Italy was one of the six founding members of the European Union, which began as the European Economic Community."
+    },
+    {
+        question: "Which economic concept is linked to the idea of 'supply-side economics' that gained prominence after 1973?",
+        answers: ["Increasing government spending to stimulate demand", "Lowering taxes and reducing regulation to stimulate production", "Raising wages to increase consumption", "Nationalizing industries to promote growth"],
+        correctAnswer: 1,
+        explanation: "Supply-side economics focuses on lowering taxes and reducing regulation to stimulate production and economic growth."
+    },
+    {
+        question: "What was the main reason for the economic slowdown in Communist countries during the late 20th century?",
+        answers: ["A lack of state intervention", "Over-reliance on free markets", "Technological stagnation and inefficiency in planned economies", "Increased military spending"],
+        correctAnswer: 2,
+        explanation: "Communist countries experienced economic stagnation due to technological inefficiency and the limitations of planned economies."
+    },
+    {
+        question: "Which organization was founded in 1961 to promote economic growth and free trade among Western countries?",
+        answers: ["BRICS", "COMECON", "OECD", "OPEC"],
+        correctAnswer: 2,
+        explanation: "The OECD (Organisation for Economic Co-operation and Development) was founded to promote economic growth and free trade among Western countries."
+    },
+    {
+        question: "What economic trend emerged in the 1980s as a result of neoliberal policies?",
+        answers: ["Increased government regulation", "Privatization of state-owned industries", "Expansion of welfare programs", "A rise in agricultural subsidies"],
+        correctAnswer: 1,
+        explanation: "Neoliberal policies in the 1980s often involved the privatization of state-owned industries, promoting free-market principles."
+    },
+    {
+        question: "Which of the following describes the 'Golden Years' of managed capitalism (1945-1973)?",
+        answers: ["Laissez-faire economics", "Strong government intervention and demand management", "Focus on global free trade", "Reduced welfare programs"],
+        correctAnswer: 1,
+        explanation: "The 'Golden Years' were marked by strong government intervention, especially through Keynesian demand management policies."
+    },
+    {
+        question: "What event in 1973 led to a global energy crisis and reshaped economic policies worldwide?",
+        answers: ["The signing of NAFTA", "The collapse of the Soviet Union", "The OPEC oil embargo", "The Bretton Woods Agreement"],
+        correctAnswer: 2,
+        explanation: "The 1973 OPEC oil embargo led to a global energy crisis, triggering inflation and prompting many countries to adopt neoliberal economic policies."
+    },
+    {
+        question: "What was a primary cause of the economic boom in countries like Taiwan and South Korea in the 1970s?",
+        answers: ["High reliance on agricultural exports", "State-led industrial policies and exports to Western markets", "Low foreign direct investment", "Subsidization of the oil industry"],
+        correctAnswer: 1,
+        explanation: "The Asian Tigers like Taiwan and South Korea experienced rapid industrialization due to state-led policies focused on exports."
+    },
+    {
+        question: "Which of the following economic policies is associated with neoliberalism?",
+        answers: ["Welfare expansion", "High tariffs on imported goods", "Deregulation and lower taxes", "Increased state ownership of industries"],
+        correctAnswer: 2,
+        explanation: "Neoliberalism emphasizes deregulation, lower taxes, and reducing the role of the state in the economy."
+    },
+    {
+        question: "Which organization, founded in 1960, has 13 members and focuses on controlling oil prices?",
+        answers: ["WTO", "OECD", "OPEC", "NAFTA"],
+        correctAnswer: 2,
+        explanation: "OPEC (Organization of Petroleum Exporting Countries) controls oil production and prices, influencing the global energy market."
+    },
+    {
+        question: "What was the main goal of the BRICS economic bloc?",
+        answers: ["To promote regional trade in Europe", "To create a new global currency", "To strengthen economic cooperation among emerging markets", "To establish environmental regulations"],
+        correctAnswer: 2,
+        explanation: "BRICS was formed to strengthen economic cooperation and trade among emerging markets like Brazil, Russia, India, China, and South Africa."
+    },
+    {
+        question: "Which period in the early 20th century saw the rise of protectionism due to global economic instability?",
+        answers: ["1860s depression", "Great Depression of 1929", "World War I", "The oil crisis of 1973"],
+        correctAnswer: 1,
+        explanation: "The Great Depression of 1929 led many countries to adopt protectionist policies, creating trade barriers and reducing global trade."
+    },
+    {
+        question: "What was a major consequence of the 1870s depression in global trade policies?",
+        answers: ["Countries moved towards free trade agreements", "Farmers were hit hard, leading to protectionist policies", "Rapid industrial growth in the global South", "Strengthening of colonial rule"],
+        correctAnswer: 1,
+        explanation: "The 1870s depression negatively impacted farms, causing many countries to adopt protectionist policies, moving away from free trade."
+    },
+    {
+        question: "What major change occurred in global trade with the formation of the European Union's common market?",
+        answers: ["Reduction of global trade barriers", "Introduction of a common currency across Europe", "The formation of a military alliance", "Establishment of free movement of goods, services, capital, and labor"],
+        correctAnswer: 3,
+        explanation: "The EU’s common market allowed for the free movement of goods, services, capital, and labor between member states."
+    },
+    {
+        question: "How did the oil crisis of 1973 impact global economic policies?",
+        answers: ["Led to an expansion of welfare programs", "Triggered a global shift toward neoliberalism and deregulation", "Increased government control over oil production", "Reduced dependence on fossil fuels"],
+        correctAnswer: 1,
+        explanation: "The oil crisis of 1973 led to inflation and economic instability, triggering a shift towards neoliberal policies, with an emphasis on deregulation."
+    },
+    {
+        question: "Which of the following agreements primarily aimed to modernize agriculture and industry within its member states?",
+        answers: ["NAFTA", "European Union Common Market", "TTIP", "BRICS"],
+        correctAnswer: 1,
+        explanation: "The EU’s Common Market aimed to modernize agriculture and industry to create a unified and competitive economic bloc."
+    },
+    {
+        question: "Which of the following best describes the economic disparity caused by globalization in high-income countries?",
+        answers: ["Low-income countries benefitted the most from global trade", "High-income countries maintained over 80% of income, trade, and technology", "Most people in high-income countries saw reduced living standards", "Globalization led to a more equal distribution of wealth between high and low-income countries"],
+        correctAnswer: 1,
+        explanation: "High-income countries, which make up 20% of the world's population, controlled over 80% of income, trade, and technology, exacerbating inequality."
+    },
+    {
+        question: "Which historical event triggered a movement toward free trade policies and closer global integration?",
+        answers: ["1870s depression", "Cobden-Chevalier Treaty of 1860", "World War II", "Treaty of Versailles"],
+        correctAnswer: 1,
+        explanation: "The Cobden-Chevalier Treaty of 1860 between Britain and France marked an early attempt to promote free trade and closer economic integration."
+    },
+    {
+        question: "Which concept refers to the measurement of a country's environmental impact in terms of resource consumption and waste production?",
+        answers: ["Race to the bottom", "Carbon footprint", "Purchasing power", "Ecological footprint"],
+        correctAnswer: 3,
+        explanation: "Ecological footprint measures the environmental impact of a country’s activities in terms of resource consumption and waste generation."
+    },
+    {
+        question: "Which global event marked a retreat in globalization and a rise in protectionist policies in the early 20th century?",
+        answers: ["World War I", "The Great Depression", "The creation of the European Union", "The OPEC oil embargo"],
+        correctAnswer: 1,
+        explanation: "World War I marked a retreat in globalization as countries adopted more protectionist policies, limiting trade and economic cooperation."
+    },
+    {
+        question: "Which aspect of globalization contributed most to global inequality?",
+        answers: ["The rise of transnational corporations", "The shift to agricultural economies", "The reduction of international trade", "Decreased government intervention in labor markets"],
+        correctAnswer: 0,
+        explanation: "The rise of transnational corporations played a key role in creating economic disparities, concentrating wealth in high-income countries while limiting benefits for low-income countries."
+    },
+    {
+        question: "What was the primary goal of the Kyoto Protocol, signed in 1997?",
+        answers: ["To introduce tariffs on emissions-heavy industries", "To establish a global market for trading emissions rights", "To ban the use of fossil fuels in developed countries", "To set binding agreements for developing countries to reduce emissions"],
+        correctAnswer: 1,
+        explanation: "The Kyoto Protocol introduced a market-based mechanism for trading emissions rights to reduce greenhouse gas emissions globally."
+    },
+    {
+        question: "Which factor contributed to China's slower economic growth during the Cold War compared to other Asian Tigers?",
+        answers: ["China's participation in COMECON", "Low living standards compared to other Asian Tigers", "A heavy reliance on Western technology", "Frequent government reforms"],
+        correctAnswer: 1,
+        explanation: "China had relatively low living standards compared to the other Asian Tigers and did not benefit from the same technological advances before opening up in 1978."
+    },
+    {
+        question: "Which trade agreement replaced NAFTA and modernized the trade relations between the U.S., Canada, and Mexico?",
+        answers: ["TTIP", "BRICS", "USMCA", "CETA"],
+        correctAnswer: 2,
+        explanation: "The USMCA replaced NAFTA in 2020, modernizing trade relations between the U.S., Canada, and Mexico to address new economic challenges."
+    },
+    {
+        question: "Which environmental concept explains the increasing impact of human activity on natural resources due to population growth and affluence?",
+        answers: ["Carbon neutrality", "Purchasing power parity", "Ecological footprint", "Sustainable development"],
+        correctAnswer: 2,
+        explanation: "Ecological footprint refers to the growing impact of human activity on the environment due to population growth, affluence, and consumption patterns."
+    },
+    {
+        question: "Which agreement was considered a failure because of the disagreements between developed and developing nations over climate change responsibilities?",
+        answers: ["Kyoto Protocol", "Paris Agreement", "Copenhagen Summit of 2009", "The Bretton Woods Agreement"],
+        correctAnswer: 2,
+        explanation: "The Copenhagen Summit of 2009 failed largely due to disagreements between developed nations and developing nations over who should bear the burden of reducing emissions."
+    },
+    {
+        question: "Which of the following best describes the changes in labor markets as a result of globalization in the late 20th century?",
+        answers: ["Increased job security and higher wages in low-income countries", "Growing inequality due to a 'race to the bottom' in wages and working conditions", "A decrease in global trade due to increased tariffs", "Stronger labor unions and worker protections globally"],
+        correctAnswer: 1,
+        explanation: "Globalization contributed to a 'race to the bottom,' where wages and labor standards were lowered in many developing countries to attract foreign investment."
+    },
+    {
+        question: "Which country was NOT part of the original six founding members of the European Union?",
+        answers: ["Germany", "Belgium", "France", "United Kingdom"],
+        correctAnswer: 3,
+        explanation: "The United Kingdom was not one of the original six founding members of the European Union, which included Germany, France, Italy, Belgium, the Netherlands, and Luxembourg."
+    },
+    {
+        question: "Which global agreement, signed in 2015, was the first to involve nearly all nations in addressing climate change?",
+        answers: ["Kyoto Protocol", "Copenhagen Accord", "Paris Agreement", "USMCA"],
+        correctAnswer: 2,
+        explanation: "The Paris Agreement was the first global climate change agreement that involved nearly all nations in efforts to limit global warming."
+    },
+    {
+        question: "What was the economic philosophy of 'supply-side economics,' popularized in the West after 1973?",
+        answers: ["Reducing taxes and deregulating industries to boost production", "Increasing state intervention to regulate markets", "Increasing public spending to stimulate demand", "Raising tariffs to protect domestic industries"],
+        correctAnswer: 0,
+        explanation: "Supply-side economics focuses on reducing taxes and deregulating industries to encourage production and economic growth."
+    },
+    {
+        question: "Which of the following best describes the economic focus of the Asian Tigers during their rapid industrialization?",
+        answers: ["Development of agricultural products", "Heavy investment in manufacturing and technology", "Importing raw materials from Europe", "Establishing protectionist trade barriers"],
+        correctAnswer: 1,
+        explanation: "The Asian Tigers focused on manufacturing, particularly in electronics and technology, driving rapid economic growth."
+    },
+    {
+        question: "What economic policy shift took place in Western countries after the 1970s oil crisis?",
+        answers: ["Increased government spending", "Expansion of welfare programs", "Adoption of neoliberal policies like deregulation", "Nationalization of major industries"],
+        correctAnswer: 2,
+        explanation: "After the 1970s oil crisis, many Western countries adopted neoliberal policies, including deregulation and reducing government intervention."
+    },
+    {
+        question: "What term refers to countries lowering labor standards and wages to attract foreign investment?",
+        answers: ["Protectionism", "Race to the bottom", "Keynesianism", "Free trade"],
+        correctAnswer: 1,
+        explanation: "A 'race to the bottom' describes how countries lower labor standards, wages, and regulations to attract foreign investment."
+    },
+    {
+        question: "Which agreement replaced NAFTA in 2020, modernizing the free trade zone between the U.S., Canada, and Mexico?",
+        answers: ["TTIP", "BRICS", "OECD", "USMCA"],
+        correctAnswer: 3,
+        explanation: "The USMCA (United States-Mexico-Canada Agreement) replaced NAFTA in 2020, modernizing trade relations between the three countries."
+    },
+    {
+        question: "Which of the following best explains the environmental impact of globalization since the 1970s?",
+        answers: ["Global emissions have consistently decreased", "Globalization has contributed to environmental degradation and increased emissions", "There has been a shift towards autarky", "The Kyoto Protocol resolved most environmental concerns"],
+        correctAnswer: 1,
+        explanation: "While globalization has improved economic growth, it has also contributed to environmental degradation through increased emissions and resource consumption."
+    },
+    {
+        question: "Which economic bloc was formed to promote economic cooperation among Brazil, Russia, India, China, and South Africa?",
+        answers: ["OPEC", "NAFTA", "BRICS", "OECD"],
+        correctAnswer: 2,
+        explanation: "BRICS is an economic bloc consisting of Brazil, Russia, India, China, and South Africa, promoting economic cooperation among emerging markets."
+    },
+    {
+        question: "What was the primary cause of the 'race to the bottom' phenomenon in developing nations?",
+        answers: ["Pressure to increase labor standards", "Efforts to attract foreign investment through lower wages and weaker regulations", "Increased demand for agricultural exports", "Over-reliance on state-led economic planning"],
+        correctAnswer: 1,
+        explanation: "The 'race to the bottom' refers to efforts by developing countries to attract foreign investment by lowering wages and relaxing labor and environmental regulations."
+    },
+    {
+        question: "Which of the following is a primary goal of the European Union's common market?",
+        answers: ["To impose tariffs on goods entering Europe", "To restrict the movement of workers", "To promote free movement of goods, services, capital, and labor", "To create a European military force"],
+        correctAnswer: 2,
+        explanation: "The primary goal of the EU's common market is to promote the free movement of goods, services, capital, and labor within member states."
+    },
+    {
+        question: "Which global organization focuses on regulating oil production and stabilizing oil prices?",
+        answers: ["OECD", "BRICS", "OPEC", "NAFTA"],
+        correctAnswer: 2,
+        explanation: "OPEC (Organization of Petroleum Exporting Countries) is responsible for regulating oil production and stabilizing prices among its member nations."
+    },
+    {
+        question: "Which term refers to the environmental impact of human activity, especially in terms of resource consumption and waste production?",
+        answers: ["Ecological footprint", "Carbon tax", "Sustainable development", "Greenhouse effect"],
+        correctAnswer: 0,
+        explanation: "Ecological footprint refers to the impact of human activities in terms of resource consumption and waste production."
+    },
+    {
+        question: "Which economic bloc includes Brazil, Russia, India, and China, among other emerging economies?",
+        answers: ["OECD", "NAFTA", "BRICS", "OPEC"],
+        correctAnswer: 2,
+        explanation: "BRICS is an economic bloc consisting of emerging economies like Brazil, Russia, India, China, and South Africa."
+    },
+    {
+        question: "Which of the following best explains why the Asian Tigers experienced rapid growth in the 1960s?",
+        answers: ["Their focus on agricultural output", "Investments in technology and electronics for export", "Heavy reliance on raw material exports", "Minimal government intervention"],
+        correctAnswer: 1,
+        explanation: "The Asian Tigers invested in high-tech industries like electronics, which helped them grow rapidly by exporting these products."
+    },
+    {
+        question: "Which event in 1973 significantly impacted global economic policies?",
+        answers: ["The formation of the European Union", "The OPEC oil embargo", "The creation of NAFTA", "The establishment of the World Trade Organization"],
+        correctAnswer: 1,
+        explanation: "The 1973 OPEC oil embargo caused oil prices to skyrocket, triggering economic shifts and inflation worldwide."
+    },
+    {
+        question: "Which concept is used to measure the environmental impact of a population?",
+        answers: ["Purchasing Power Parity", "Race to the Bottom", "Ecological Footprint", "Bretton Woods System"],
+        correctAnswer: 2,
+        explanation: "Ecological Footprint measures the environmental impact of a population based on resource consumption and waste production."
+    },
+    {
+        question: "Which of the following countries is NOT one of the original Asian Tigers?",
+        answers: ["Taiwan", "Japan", "South Korea", "Hong Kong"],
+        correctAnswer: 1,
+        explanation: "Japan is not considered one of the original Asian Tigers; the term typically refers to Taiwan, South Korea, Hong Kong, and Singapore."
+    },
+    {
+        question: "What role did the introduction of fossil fuels play in the global economy in the 18th century?",
+        answers: ["It slowed down industrialization due to pollution concerns", "It accelerated industrial production and global trade", "It caused an immediate decline in agricultural production", "It was mainly used for transportation by sea"],
+        correctAnswer: 1,
+        explanation: "Fossil fuels accelerated industrial production by providing a cheap, efficient energy source, which boosted global trade."
+    },
+    {
+        question: "Which agreement aimed to reduce trade barriers between the U.S., Canada, and Mexico?",
+        answers: ["TTIP", "USMCA", "NAFTA", "OPEC"],
+        correctAnswer: 2,
+        explanation: "NAFTA was the agreement that reduced trade barriers and created a large free trade zone between the U.S., Canada, and Mexico."
+    },
+    {
+        question: "Which of the following best explains the concept of 'race to the bottom' in globalization?",
+        answers: ["Countries compete to lower wages and weaken regulations to attract investment", "Countries race to industrialize as quickly as possible", "Countries focus on raising wages to outcompete others in global trade", "Countries compete to increase environmental standards"],
+        correctAnswer: 0,
+        explanation: "'Race to the bottom' refers to countries lowering wages and environmental standards to attract foreign investment."
+    },
+    {
+        question: "Which major event marked the 'Golden Years of Managed Capitalism' between 1945 and 1973?",
+        answers: ["The establishment of the European Union", "The rise of Keynesian economics with strong government intervention", "The global shift toward Neo-liberal policies", "The rapid adoption of supply-side economics"],
+        correctAnswer: 1,
+        explanation: "Keynesian economics dominated during the post-war years, with strong government intervention to manage demand and ensure full employment."
+    },
+    {
+        question: "Which of the following best describes the goals of the European Union’s Common Market?",
+        answers: ["To create a European military alliance", "To establish a single European currency", "To ensure freedom of movement for goods, services, capital, and labor", "To limit the movement of workers within the EU"],
+        correctAnswer: 2,
+        explanation: "The European Union's Common Market aimed to ensure free movement of goods, services, capital, and labor across member states."
+    },
+    {
+        question: "Which global event in 1929 led to the creation of trade barriers as countries tried to protect their economies?",
+        answers: ["The Great Depression", "The Treaty of Versailles", "The formation of the European Union", "The Marshall Plan"],
+        correctAnswer: 0,
+        explanation: "The Great Depression led to a rise in protectionism as countries erected trade barriers to safeguard their economies."
+    },
+    {
+        question: "Which major international agreement was signed in 1997 to address global emissions?",
+        answers: ["Copenhagen Agreement", "Paris Agreement", "Kyoto Protocol", "Bretton Woods Agreement"],
+        correctAnswer: 2,
+        explanation: "The Kyoto Protocol was signed in 1997 as the first major international agreement to address global greenhouse gas emissions."
+    },
+    {
+        question: "Which of the following is the main goal of the Paris Agreement (2015)?",
+        answers: ["To create a global emissions trading scheme", "To restrict global warming to 1.5-2°C", "To regulate deforestation in developing nations", "To create a carbon tax system for industrialized nations"],
+        correctAnswer: 1,
+        explanation: "The Paris Agreement aims to keep global warming below 2°C by reducing greenhouse gas emissions globally."
+    },
+    {
+        question: "Which global organization was established in 1960 to control oil production and prices?",
+        answers: ["BRICS", "WTO", "OPEC", "NAFTA"],
+        correctAnswer: 2,
+        explanation: "OPEC was formed to regulate oil production and stabilize oil prices among member nations."
+    },
+    {
+        question: "Which of the following describes the significance of the One Belt, One Road initiative?",
+        answers: ["It was the first climate agreement involving developing nations", "It aimed to reduce carbon emissions globally", "It built infrastructure connecting China to Europe, Asia, and Africa", "It created a new digital currency for trade"],
+        correctAnswer: 2,
+        explanation: "The One Belt, One Road initiative is China's ambitious infrastructure project to connect trade routes across Asia, Europe, and Africa."
+    },
+    {
+        question: "Which of the following was a direct consequence of the Copenhagen Summit of 2009 on climate change?",
+        answers: ["A successful global agreement to limit deforestation and greenhouse gas emissions", "A major failure due to disagreements between developed and emerging economies", "The ratification of the Kyoto Protocol by the United States", "The establishment of the world’s first international carbon tax"],
+        correctAnswer: 1,
+        explanation: "The Copenhagen Summit largely failed due to disagreements between developed and developing nations on emission responsibilities."
+    },
+    {
+        question: "Which of the following best describes the economic growth models of the Capitalist West and Communist East during the Cold War?",
+        answers: ["The West focused on extensive growth, while the East focused on intensive growth", "The East had a planned economy with state control, while the West relied on market economies", "The West relied on heavy agriculture, while the East focused on service industries", "Both sides prioritized agricultural development over industrialization"],
+        correctAnswer: 1,
+        explanation: "The Capitalist West relied on market economies, while the Communist East used planned economies with heavy state intervention."
+    },
+    {
+        question: "Which of the following agreements marked the first significant attempt to create a free trade area in North America?",
+        answers: ["The NAFTA agreement of 1994", "The USMCA agreement of 2020", "The U.S.-Canada Free Trade Agreement of 1989", "The Trans-Pacific Partnership (TPP)"],
+        correctAnswer: 2,
+        explanation: "The U.S.-Canada Free Trade Agreement of 1989 was the first major step toward creating a North American free trade zone."
+    },
+    {
+        question: "What was the primary purpose of the Cobden-Chevalier Treaty in 1860?",
+        answers: ["To limit British trade with India", "To introduce tariffs on agricultural products", "To create a trade agreement between Britain and France that promoted free trade", "To establish a permanent military alliance between Britain and France"],
+        correctAnswer: 2,
+        explanation: "The Cobden-Chevalier Treaty of 1860 established one of the earliest free trade agreements between Britain and France."
+    },
+    {
+        question: "What was the significance of the Treaty of Versailles for Germany’s economy post-WWI?",
+        answers: ["It forced Germany to abandon its colonial territories", "It imposed heavy reparations, leading to a cycle of debt", "It triggered the rise of Keynesian economics in Germany", "It resulted in Germany’s removal from the League of Nations"],
+        correctAnswer: 1,
+        explanation: "The Treaty of Versailles imposed heavy reparations on Germany, creating economic difficulties and leading to hyperinflation."
+    },
+    {
+        question: "How did the Asian Tigers capitalize on the economic boom of the 1960s?",
+        answers: ["By exporting raw materials to the Global North", "By investing heavily in industrial production for the Global North, including electronics and textiles", "By focusing on agricultural production to supply the Middle East", "By forming a trade bloc to rival the European Union"],
+        correctAnswer: 1,
+        explanation: "The Asian Tigers invested in manufacturing and exporting goods like electronics and textiles, fueling rapid economic growth."
+    },
+    {
+        question: "Which of the following best describes the primary objective of the European Union's common market?",
+        answers: ["To establish a single European military force", "To ensure freedom of movement for goods, services, capital, and labor across member states", "To set tariffs on goods imported from the U.S.", "To promote agricultural specialization across Eastern Europe"],
+        correctAnswer: 1,
+        explanation: "The common market of the EU allows for the free movement of goods, services, capital, and labor across member states."
+    },
+    {
+        question: "Which of the following agreements between the U.S. and Mexico was replaced by the USMCA in 2020?",
+        answers: ["NAFTA", "TTIP", "The Marshall Plan", "Bretton Woods Agreement"],
+        correctAnswer: 0,
+        explanation: "NAFTA was replaced by the USMCA in 2020 to address concerns over labor, environmental regulations, and intellectual property."
+    },
+    {
+        question: "What is the main idea behind the 'race to the bottom' in global economic systems?",
+        answers: ["Countries compete to lower wages and regulations to attract investment", "Countries compete to raise labor standards to attract skilled workers", "Countries attempt to eliminate poverty through social safety nets", "Nations compete to establish high environmental standards to attract green industries"],
+        correctAnswer: 0,
+        explanation: "'Race to the bottom' refers to countries reducing labor standards, environmental regulations, and wages to attract foreign investments."
+    }
+];
+
+
+        const quizContainer = document.getElementById('quiz');
+        const scoreDisplay = document.getElementById('score');
+
+        function loadQuestion() {
+            // Check if all questions have been used, if so, reset the array
+            if (usedQuestions.length === questions.length) {
+                usedQuestions = [];
+            }
+
+            // Randomly select an unused question
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            } while (usedQuestions.includes(randomIndex));
+
+            usedQuestions.push(randomIndex);
+            const currentQuestion = questions[randomIndex];
+
+            // Clear previous content
+            quizContainer.innerHTML = '';
+
+            const questionTitle = document.createElement('h3');
+            questionTitle.textContent = currentQuestion.question;
+            quizContainer.appendChild(questionTitle);
+
+            currentQuestion.answers.forEach((answer, i) => {
+                const answerButton = document.createElement('button');
+                answerButton.textContent = answer;
+                answerButton.addEventListener('click', () => checkAnswer(i, currentQuestion.correctAnswer, answerButton, currentQuestion));
+                quizContainer.appendChild(answerButton);
+            });
+        }
+
+        function checkAnswer(selected, correct, button, question) {
+            const feedback = document.createElement('div');
+            feedback.classList.add('feedback');
+
+            if (selected === correct) {
+                button.classList.add('correct');
+                updateScore(1);
+                feedback.textContent = `Correct! ${question.explanation}`;
+                quizContainer.appendChild(feedback);
+                setTimeout(loadQuestion, 4000); // Move to the next question after 4 seconds
+            } else {
+                button.classList.add('wrong');
+                updateScore(-1);
+                feedback.textContent = `Wrong! The correct answer is: ${question.answers[correct]}. ${question.explanation}`;
+                quizContainer.appendChild(feedback);
+                setTimeout(loadQuestion, 6000); // Show the correct answer for 6 seconds, then move to the next question
+            }
+        }
+
+        function updateScore(change) {
+            score += change;
+            scoreDisplay.textContent = score;
+        }
+
+        // Load the first random question when the page loads
+        loadQuestion();
+
+    </script>
+
+</body>
+</html>
